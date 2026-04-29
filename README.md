@@ -3,10 +3,11 @@
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)](https://fastapi.tiangolo.com/)
+[![AI Powered](https://img.shields.io/badge/AI-Powered-blueviolet.svg)](#ai-powered-features)
 
-**A CLI tool to scaffold production-ready FastAPI projects in seconds.**
+**A CLI tool to scaffold production-ready FastAPI projects in seconds — with AI-powered route generation from natural language.**
 
-Stop writing boilerplate. QuickAPI generates a complete, well-structured FastAPI project with routes, models, database, Docker, tests, and more — ready to run immediately.
+Stop writing boilerplate. QuickAPI generates a complete, well-structured FastAPI project with routes, models, database, Docker, tests, and more — ready to run immediately. With AI mode, describe your API in plain English and get production-ready code generated instantly.
 
 ## Features
 
@@ -18,7 +19,12 @@ Stop writing boilerplate. QuickAPI generates a complete, well-structured FastAPI
 - **CORS Middleware** — Pre-configured cross-origin support
 - **Test Suite** — Pytest tests generated for all endpoints
 - **Clean Architecture** — Organized package structure following best practices
-- **Customizable** — Choose features, port, Python version via CLI flags
+
+### AI-Powered Features
+
+- **AI Generate** — Describe an API in natural language, get complete FastAPI routes and models
+- **AI Add Endpoint** — Add new endpoints to existing projects with plain English descriptions
+- **Multi-Provider** — Works with OpenAI, Google Gemini, and NVIDIA APIs
 
 ## Installation
 
@@ -30,13 +36,69 @@ pip install -e .
 
 ## Quick Start
 
-Create a new project:
+### Scaffold a project
 
 ```bash
 quickapi new myapp
 ```
 
-This generates:
+### Scaffold with all features
+
+```bash
+quickapi new myapp --auth --database sqlite --port 3000
+```
+
+### AI: Generate API from description
+
+```bash
+export OPENAI_API_KEY="your-key"   # or GEMINI_API_KEY or NVIDIA_API_KEY
+
+quickapi generate "a blog API with posts, comments, and tags"
+quickapi generate "user management with registration, login, profiles" -o ./output
+```
+
+### AI: Add endpoint to existing project
+
+```bash
+quickapi add-endpoint "search items by name with pagination" -r myapp/routes.py
+```
+
+## AI Setup
+
+Set one of these environment variables to enable AI features:
+
+| Provider | Environment Variable | Default Model |
+|----------|---------------------|---------------|
+| OpenAI | `OPENAI_API_KEY` | `gpt-4o-mini` |
+| Google Gemini | `GEMINI_API_KEY` | `gemini-2.0-flash` |
+| NVIDIA | `NVIDIA_API_KEY` | `meta/llama-3.1-8b-instruct` |
+
+Override the model with: `OPENAI_MODEL`, `GEMINI_MODEL`, or `NVIDIA_MODEL`.
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `new NAME` | Scaffold a new FastAPI project |
+| `templates` | List available features and flags |
+| `generate DESC` | AI: Generate API from natural language |
+| `add-endpoint DESC` | AI: Generate endpoint for existing routes |
+
+### `new` Options
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `--description, -d` | Project description | "A FastAPI application" |
+| `--database, -db` | Database (`sqlite` or `none`) | `sqlite` |
+| `--auth` | Include authentication | off |
+| `--no-docker` | Skip Docker files | included |
+| `--no-tests` | Skip test files | included |
+| `--no-cors` | Disable CORS | enabled |
+| `--port, -p` | Port number | 8000 |
+| `--python` | Python version | 3.12 |
+| `--output, -o` | Output directory | current dir |
+
+## Generated Project Structure
 
 ```
 myapp/
@@ -46,6 +108,7 @@ myapp/
 │   ├── routes.py         # CRUD API routes
 │   ├── models.py         # Pydantic schemas
 │   ├── database.py       # SQLite setup
+│   ├── auth.py           # Authentication (with --auth)
 │   └── config.py         # App configuration
 ├── tests/
 │   └── test_api.py       # Endpoint tests
@@ -56,52 +119,6 @@ myapp/
 ├── .gitignore
 └── README.md
 ```
-
-Run it:
-
-```bash
-cd myapp
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-uvicorn myapp.main:app --reload
-```
-
-API docs at: http://localhost:8000/docs
-
-## Usage
-
-### Create with all features
-
-```bash
-quickapi new myapp --auth --database sqlite --port 3000
-```
-
-### Create a minimal API (no database, no Docker)
-
-```bash
-quickapi new myapp --database none --no-docker
-```
-
-### List available features
-
-```bash
-quickapi templates
-```
-
-### Options
-
-| Flag | Description | Default |
-|------|-------------|---------|
-| `--description, -d` | Project description | "A FastAPI application" |
-| `--database, -db` | Database backend (`sqlite` or `none`) | `sqlite` |
-| `--auth` | Include token authentication | off |
-| `--no-docker` | Skip Docker files | included |
-| `--no-tests` | Skip test files | included |
-| `--no-cors` | Disable CORS middleware | enabled |
-| `--port, -p` | Default port number | 8000 |
-| `--python` | Python version for Dockerfile | 3.12 |
-| `--output, -o` | Output directory | current dir |
 
 ## Generated API Endpoints
 

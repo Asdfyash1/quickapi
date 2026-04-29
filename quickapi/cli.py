@@ -131,5 +131,40 @@ def templates() -> None:
     console.print("  quickapi new myapp --auth --database sqlite --port 3000\n")
 
 
+@main.command()
+@click.argument("description")
+@click.option("--output", "-o", default=None, type=click.Path(resolve_path=True), help="Save generated files to this directory.")
+def generate(description: str, output: str | None) -> None:
+    """Generate FastAPI routes from a natural language description.
+
+    Example: quickapi generate "a blog API with posts, comments, and user authentication"
+
+    Requires one of: OPENAI_API_KEY, GEMINI_API_KEY, or NVIDIA_API_KEY.
+    """
+    from .ai_generate import ai_generate_api
+
+    output_path = Path(output) if output else None
+    ai_generate_api(description, output_dir=output_path)
+
+
+@main.command()
+@click.argument("description")
+@click.option("--routes-file", "-r", default=None, type=click.Path(exists=True), help="Existing routes.py to extend.")
+def add_endpoint(description: str, routes_file: str | None) -> None:
+    """Generate a single endpoint from a description.
+
+    Example: quickapi add-endpoint "search items by name with pagination"
+
+    Requires one of: OPENAI_API_KEY, GEMINI_API_KEY, or NVIDIA_API_KEY.
+    """
+    from .ai_generate import ai_add_endpoint
+
+    existing = ""
+    if routes_file:
+        existing = Path(routes_file).read_text()
+
+    ai_add_endpoint(description, existing_routes=existing)
+
+
 if __name__ == "__main__":
     main()
